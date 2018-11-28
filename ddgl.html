@@ -1,0 +1,383 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<script src="js/jquery-2.0.0.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-combined.min.css">
+	<script>
+
+		function fuyong(x) {
+			if (x == 1) {
+				$("#save").attr("onclick", "Add_place()");
+			} else if (x == 0) {
+				$("#save").attr("onclick", "Update_place()");
+			}
+		}
+
+		function Add_place() {//ok，只需要上环境
+			fuyong(1);
+			//alert("调用add");
+			var placename = $("#zhandian").val();
+			var shifazhan = $("#shifazhan").val();
+			var zhongdianzhan = $("#zhongdianzhan").val();
+			var starttime = $("#starttime").val();
+			var endtime = $("#endtime").val();
+			var price = $("#price").val();
+			//alert(placename);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/place/add", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true },
+				async: true, // 是否异步执行.
+				data: {
+					"action": "place_add",
+					"placename": placename
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("添加成功");
+
+					}
+					else {
+						alert("添加失败");
+					}
+					Search();
+				}
+			});
+
+		}
+
+		var Selplacename = "";
+		var SelplaceID = "";
+		function getupdate(element) {//get更新的行的id的name
+			SelplaceID = element.id;
+			var name = document.getElementById(SelplaceID);
+			Selplacename = name.innerHTML;
+			//alert("getupdate"+SelplaceID);
+			//alert("getupdate"+Selplacename);
+			fuyong(0);
+		}
+
+		function Update_place() {//ok
+			//alert("update"+Selplacename);
+			var newplacename = $("#zhandian").val();
+			//alert(newplacename);
+			var shifazhan = $("#shifazhan").val();
+			var zhongdianzhan = $("#zhongdianzhan").val();
+			var starttime = $("#starttime").val();
+			var endtime = $("#endtime").val();
+			var price = $("#price").val();
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/place/edit", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true }, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "place_edit",
+					"placename": Selplacename,//王健这里后端只要了一个placename
+					"newplacename": newplacename
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("修改成功");
+
+					}
+					else {
+						alert("修改失败");
+					}
+					Search();
+				}
+			});
+
+
+		}
+
+
+
+		$(function GetPlace() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/place/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+
+					$.each(data.data, function (i, n) {
+
+						str += "<li> <a onclick=\"SelByPlace(this)\" id=\"" + n.placename + "\">" + n.placename + "</a> </li>";
+					});
+					$("#SelPlace").append(str);
+				}
+			});
+		});
+
+
+		function SelByPlace(element) {//ok就差search
+			//alert("dnys");
+			var Selplacename = document.getElementById(element.id);
+			var placename = Selplacename.innerHTML;
+			//alert(placename);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/place/list", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true }, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "place_list",
+					"placename": placename
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+
+						$.each(data.data, function (i, n) {
+							if (placename == n.placename) {
+								var str = "";
+								$("#searchResult").text("");
+
+								str += "<tr class=\"success\"><td>" + placename + "</td>";
+								str += "<td id=\"\">" + n.routes + "</td>";
+								str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + placename + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"del" + n.placename + "\" onclick=\"Del_place(this)\">删除</a></td>";
+								str += "</tr>";
+								$("#searchResult").append(str);
+							}
+
+						});
+					}
+					else {
+						alert("查询失败");
+					}
+
+				}
+			});
+		}
+
+		function SelByRoute(element) {
+			//alert("dnys");
+			//alert(element);
+			var Selroutename = document.getElementById(element.id);
+			var routename = Selroutename.innerHTML;
+			//alert(routename);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/place/listbyroute", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true }, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "place_list",
+					"routename": routename
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					var str = "";
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						str += "<tr class=\"success\"><td>" + n.placename + "</td>";
+						str += "<td id=\"\">" + n.routes + "</td>";
+						str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + n.placename + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"" + n.placename + "\" onclick=\"Del_place(this)\">删除</a></td>";
+						str += "</tr>";
+
+					});
+
+					$("#searchResult").append(str);
+				}
+			});
+		}
+
+
+
+		$(function GetRoute() {//ok
+			$.ajax({
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$.each(data.data, function (i, n) {
+						str += "<li> <a onclick=\"SelByRoute(this)\" id=\"route" + n.routename + "\" >" + n.routename + "</a> </li>";
+					});
+					$("#SelRoute").append(str);
+				}
+			});
+		});
+
+
+
+		function Search() {//
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/place/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						str += "<tr class=\"success\"><td>" + n.placename + "</td>";
+						str += "<td id=\"\">" + n.routes + "</td>";
+						str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + n.placename + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"" + n.placename + "\" onclick=\"Del_place(this)\">删除</a></td>";
+						str += "</tr>";
+
+					});
+
+					$("#searchResult").append(str);
+				}
+			});
+		}
+		$(function () { Search(); });
+
+
+		function Del_place(element) {//ok,就差加上环境
+			var SelPlaceID = element.id;
+			//var SelPlaceName = element.value();
+			alert(SelPlaceID);
+			var name = document.getElementById(SelPlaceID);
+			var placename = name.innerHTML;
+			alert(placename);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/place/del", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true }, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "place_del",
+					"placename": placename
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("删除成功");
+
+					}
+					else {
+						alert("删除失败");
+					}
+					Search();
+				}
+			});
+		}
+
+	</script>
+
+</head>
+
+<body>
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="row-fluid">
+					<div class="span12">
+						<ul class="nav nav-tabs">
+							<li>
+								<a href="xxtj.html">信息统计</a>
+							</li>
+							<li>
+								<a href="yygl.html">用户管理</a>
+							</li>
+							<li>
+								<a href="gjgl.html">公交管理</a>
+							</li>
+							<!-- <li>
+								<a href="系统设置.html">系统设置</a>
+							</li> -->
+							<li class="active">
+								<a href="ddgl.html">地点管理</a>
+							</li>
+
+
+						</ul>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span3">
+						<div class="btn-group">
+							<button class="btn">根据线路筛选</button> <button style="padding:8px" data-toggle="dropdown" class="btn dropdown-toggle"><span
+								 class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelRoute">
+
+							</ul>
+						</div>
+
+					</div>
+					<div class="span3">
+						<div class="btn-group">
+							<button class="btn">根据地点筛选</button> <button style="padding:8px" data-toggle="dropdown" class="btn dropdown-toggle"><span
+								 class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelPlace">
+							</ul>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="btn-group">
+							<a id="modal-429131" href="#tanchuang" role="button" class="btn" data-toggle="modal" onclick="fuyong(1)">添加公交站点</a>
+						</div>
+					</div>
+				</div>
+				<div class=span12 style="height:60px">
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="row-fluid">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>
+											地点
+										</th>
+										<th>
+											线路
+										</th>
+										<th>
+											操作
+										</th>
+									</tr>
+								</thead>
+								<tbody id="searchResult">
+								</tbody>
+							</table>
+							<div class="row-fluid">
+								<div class="span12">
+									<div id="foot"></div>
+
+									<div id="tanchuang" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												站点信息
+											</h3>
+										</div>
+										<div class="modal-body">
+											<table class="table">
+												<thead>
+													<tr>
+														<td>
+															站点
+														</td>
+														<td>
+															<input id="zhandian" style="width:100px" />
+														</td>
+
+													</tr>
+												</thead>
+											</table>
+											<div class="modal-footer">
+												<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <button class="btn btn-primary" id="save"
+												 onclick="">保存设置</button>
+											</div>
+										</div>
+										<!-- </div>/// -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

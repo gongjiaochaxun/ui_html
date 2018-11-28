@@ -1,0 +1,575 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<script src="js/jquery-2.0.0.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-combined.min.css">
+
+	<script type="text/javascript">
+
+		$(function GetPlace() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/place/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+
+					$.each(data.data, function (i, n) {
+
+						str += "<li> <a onclick=\"SelByPlace(this)\" id=\"" + n.placename + "\">" + n.placename + "</a> </li>";
+					});
+					$("#SelPlace").append(str);
+				}
+			});
+		});
+
+		function SelByPlace(element) {//ok
+			$.ajax({
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var id = element.id;
+					//var SelPlaceName = element.value();
+					//alert(SelRouteID);
+					//alert(id);
+					var name = document.getElementById(id);
+					var placeename = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						console.log(n.places)
+						if($.inArray(placeename,n.places)!=-1){
+							str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+							str += "<td id=\"\">" + n.places + "</td>";
+							str += "<td id=\"\">" + n.places[0] + "</td>";
+							str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+							str += "<td id=\"\">" + n.start_time + "</td>";
+							str += "<td id=\"\">" + n.stop_time + "</td>";
+							str += "<td id=\"\">" + n.money + "</td>";
+							str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + i + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"" + n.routename + "\" onclick=\"Del_route(this)\">删除</a></td>";
+							str += "</tr>";
+						}
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		};
+
+		function SelByPrice(element) {//ok
+			$.ajax({
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var id = element.id;
+					//var SelPlaceName = element.value();
+					//alert(SelRouteID);
+					//alert(id);
+					var name = document.getElementById(id);
+					var price  = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						console.log(n.places)
+						if(price == n.money){
+							str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+							str += "<td id=\"\">" + n.places + "</td>";
+							str += "<td id=\"\">" + n.places[0] + "</td>";
+							str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+							str += "<td id=\"\">" + n.start_time + "</td>";
+							str += "<td id=\"\">" + n.stop_time + "</td>";
+							str += "<td id=\"\">" + n.money + "</td>";
+							str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + i + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"" + n.routename + "\" onclick=\"Del_route(this)\">删除</a></td>";
+							str += "</tr>";
+						}
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		};
+
+		function SelByTime(element) {//ok
+			$.ajax({
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var id = element.id;
+					//var SelPlaceName = element.value();
+					//alert(SelRouteID);
+					//alert(id);
+					var name = document.getElementById(id);
+					var time  = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						console.log(n.places)
+						if(time == n.start_time){
+							str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+							str += "<td id=\"\">" + n.places + "</td>";
+							str += "<td id=\"\">" + n.places[0] + "</td>";
+							str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+							str += "<td id=\"\">" + n.start_time + "</td>";
+							str += "<td id=\"\">" + n.stop_time + "</td>";
+							str += "<td id=\"\">" + n.money + "</td>";
+							str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + i + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"" + n.routename + "\" onclick=\"Del_route(this)\">删除</a></td>";
+							str += "</tr>";
+						}
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		};
+
+		function SelByRoute(element) {//ok
+			var str = "";
+			var id = element.id;
+			var name = document.getElementById(id);
+			var routename  = name.innerHTML;
+			$.ajax({
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/listbyroute",
+				dataType: "json",
+				data:{
+					"routename":routename
+				},
+				success: function (data) {
+					var str = "";
+					var id = element.id;
+					//var SelPlaceName = element.value();
+					//alert(SelRouteID);
+					//alert(id);
+					var name = document.getElementById(id);
+					var time  = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						console.log(n.places)
+						{
+							str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+							str += "<td id=\"\">" + n.places + "</td>";
+							str += "<td id=\"\">" + n.places[0] + "</td>";
+							str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+							str += "<td id=\"\">" + n.start_time + "</td>";
+							str += "<td id=\"\">" + n.stop_time + "</td>";
+							str += "<td id=\"\">" + n.money + "</td>";
+							str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + i + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"" + n.routename + "\" onclick=\"Del_route(this)\">删除</a></td>";
+							str += "</tr>";
+						}
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		};
+
+		$(function GetRoute() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$.each(data.data, function (i, n) {
+						var text = "route" + n.id;
+						str += "<li> <a onclick=\"SelByRoute(this)\" id=\"route" + n.routename + "\" >" + n.routename + "</a> </li>";
+					});
+					$("#SelRoute").append(str);
+				}
+			});
+		});
+
+		$(function GetPrice() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var moneyset = new Set();
+					$.each(data.data, function (i, n) {
+						moneyset.add(n.money);
+					});
+					moneyset.forEach(function (i) {
+						str += "<li> <a onclick=\"SelByPrice(this)\" id=\"price" + i + "\" >" + i + "</a> </li>";
+					});
+					$("#SelPrice").append(str);
+				}
+			});
+		});
+
+		$(function GetTime() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var timeset = new Set();
+					$.each(data.data, function (i, n) {
+						timeset.add(n.start_time);
+					});
+					timeset.forEach(function (i) {
+
+						str += "<li> <a onclick=\"SelByTime(this)\" id=\"time" + i + "\" >" + i + "</a> </li>";
+					});
+					$("#SelTime").append(str);
+				}
+			});
+		});
+
+		function fuyong(x) {
+			if (x == 1) {
+				$("#save").attr("onclick", "Add_route()");
+			} else if (x == 0) {
+				$("#save").attr("onclick", "Update_route()");
+			}
+		}
+
+		function Add_route() {//时间没处理
+			fuyong(1);
+			//alert("调用add");
+			var routename = $("#routename").val();
+			var place_str = $("#zhandian").val()
+			var start_time_str = $("#starttime").val();
+			var stop_time_str = $("#endtime").val();
+			var money = $("#price").val();
+			alert(routename + "  " + place_str + "  " + start_time_str + "  " + stop_time_str + "  " + money);
+			//alert(placename);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/route/add", // 请求地址 
+				type: "POST", xhrFields: {withCredentials: true}, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "route_add",
+					"routename": routename,
+					"places": place_str,
+					"money": money,
+					"start_time": start_time_str,
+					"stop_time": stop_time_str
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("添加成功");
+					}
+					else {
+						alert("添加失败");
+					}
+					Search();
+				}
+			});
+
+		}
+
+		function Del_route(element) {//ok,就差加上环境
+			var SelRouteID = element.id;
+			//var SelPlaceName = element.value();
+			//alert(SelRouteID);
+			var name = document.getElementById(SelRouteID);
+			var routename = SelRouteID;
+			alert(routename);
+			//如何获取placename
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/route/del", // 请求地址 
+				type: "POST", xhrFields: {withCredentials: true}, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "place_del_route",
+					"routename": routename
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("删除成功");
+
+					}
+					else {
+						alert("删除失败");
+					}
+					Search();
+				}
+			});
+		}
+
+		var Selroutename = "";
+		var SelrouteID = "";
+		function getupdate(element) {//get更新的行的id的name
+			SelrouteID = element.id;
+			var name = document.getElementById(SelrouteID);
+			Selroutename = name.innerHTML;
+			//alert("getupdate"+SelplaceID);
+			//alert("getupdate"+Selplacename);
+			fuyong(0);
+		}
+
+
+		function Update_route() {
+			//alert("update"+Selplacename);
+			var routename = $("#routename").val();
+			var place_str = $("#zhandian").val()
+			var start_time_str = $("#starttime").val();
+			var stop_time_str = $("#endtime").val();
+			var money = $("#price").val();
+			//alert(routename+"  "+place_str+"  "+start_time_str+"  "+stop_time_str+"  "+money);
+			//alert(placename);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/route/edit", // 请求地址 
+				type: "POST", xhrFields: {withCredentials: true}, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "route_add",
+					"routename": routename,
+					"places": place_str,
+					"money": money,
+					"start_time": start_time_str,
+					"stop_time": stop_time_str
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("修改成功");
+					}
+					else {
+						alert(data.data);
+					}
+					Search();
+				}
+			});
+
+
+		}
+
+
+		function Search() {//
+			$.ajax({
+
+				type: "POST", xhrFields: {withCredentials: true},
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+						str += "<td id=\"\">" + n.places + "</td>";
+						str += "<td id=\"\">" + n.places[0] + "</td>";
+						str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+						str += "<td id=\"\">" + n.start_time + "</td>";
+						str += "<td id=\"\">" + n.stop_time + "</td>";
+						str += "<td id=\"\">" + n.money + "</td>";
+						str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + i + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"" + n.routename + "\" onclick=\"Del_route(this)\">删除</a></td>";
+						str += "</tr>";
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		}
+	$(function(){Search();});
+
+	</script>
+
+</head>
+
+<body>
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="row-fluid">
+					<div class="span12">
+						<ul class="nav nav-tabs">
+							<li>
+								<a href="xxtj.html">信息统计</a>
+							</li>
+							<li>
+								<a href="yygl.html">用户管理</a>
+							</li>
+							<li class="active">
+								<a href="gjgl.html">公交管理</a>
+							</li>
+							<!-- <li>
+								<a href="系统设置.html">系统设置</a>
+							</li> -->
+							<li >
+								<a href="ddgl.html">地点管理</a>
+							</li>
+
+
+						</ul>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据线路筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelRoute">
+
+							</ul>
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据站点筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelPlace">
+
+							</ul>
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据票价筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelPrice">
+
+							</ul>
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据时刻筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelTime">
+
+							</ul>
+						</div>
+					</div>
+
+					<div class="span4">
+						<div class="btn-group">
+							<a id="modal-429131" href="#tanchuang" role="button" class="btn" data-toggle="modal" onclick="fuyong(1)">添加公交线路</a>
+
+						</div>
+					</div>
+				</div>
+				<div class=span12 style="height:60px">
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="row-fluid">
+							<table class="table table-bordered table-hover table-condensed">
+								<thead>
+									<tr>
+										<th>
+											线路
+										</th>
+										<th>
+											站点
+										</th>
+										<th>
+											始发站
+										</th>
+										<th>
+											终点站
+										</th>
+										<th>
+											始发时间
+										</th>
+										<th>
+											停运时间
+										</th>
+										<th>
+											票价
+										</th>
+										<th>
+											操作
+										</th>
+									</tr>
+								</thead>
+								<tbody id="searchResult">
+								</tbody>
+
+							</table>
+							<div class="row-fluid">
+								<div class="span12">
+
+									<div id="tanchuang" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												站点信息
+											</h3>
+										</div>
+										<div class="modal-body">
+											<table class="table">
+												<thead>
+													<tr>
+														<td>
+															线路
+														</td>
+														<td>
+															<input id="routename" style="width:100px" />
+														</td>
+														<td>
+															票价
+														</td>
+														<td>
+															<input id="price" style="width:100px" />
+														</td>
+														<!-- <td>
+															始发站
+														</td>
+														<td>
+															<input id="shifazhan" style="width:100px" />
+														</td> -->
+													</tr>
+													<tr>
+														<!-- <td>
+															终点站
+														</td>
+														<td>
+															<input id="zhongdianzhan" style="width:100px" />
+														</td> -->
+														<td>
+															停运时间
+														</td>
+														<td>
+															<input id="endtime" style="width:100px" />
+														</td>
+														<td>
+															始发时间
+														</td>
+														<td>
+															<input id="starttime" style="width:100px" />
+														</td>
+													</tr>
+													<tr>
+														<td>
+															站点
+														</td>
+														<td>
+															<input id="zhandian" style="width:100px" />
+														</td>
+													</tr>
+												</thead>
+
+											</table>
+											<div class="modal-footer">
+												<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <button class="btn btn-primary" id="save"
+												 onclick="">保存设置</button>
+											</div>
+										</div>
+										<!-- </div>/// -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+
+</html>

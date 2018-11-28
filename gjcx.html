@@ -1,0 +1,326 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<script src="js/jquery-2.0.0.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/echarts.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-combined.min.css">
+
+	<script type="text/javascript">
+
+
+
+		$(function GetRoute() {//ok
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$.each(data.data, function (i, n) {
+						var text = "route" + n.id;
+						str += "<li> <a onclick=\"SelByRoute(this)\" id=\"route" + n.routename + "\" >" + n.routename + "</a> </li>";
+					});
+					$("#SelRoute").append(str);
+				}
+			});
+		});
+
+		function SelByRoute(element) {//ok
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var name = document.getElementById(element.id);
+					var routename = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						if (routename == n.routename) {
+							str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+							str += "<td id=\"\">" + n.places + "</td>";
+							str += "<td id=\"\">" + n.places[0] + "</td>";
+							str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+							str += "<td id=\"\">" + n.start_time + "</td>";
+							str += "<td id=\"\">" + n.stop_time + "</td>";
+							str += "<td id=\"\">" + n.money + "</td>";
+							str += "</tr>";
+						}
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		};
+		function Logout(){
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/logout",
+				dataType: "json",
+
+				success: function (data) {
+					if(data.res==true){
+						alert("退出成功");
+						window.open("/login.html");
+					}else{
+						alert("错误"+data.data);
+						window.open("/login.html");
+					}
+				}
+			});
+		}
+
+		$(function GetTime() {//ok
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var timeset = new Set();
+					$.each(data.data, function (i, n) {
+						timeset.add(n.start_time);
+					});
+					timeset.forEach(function (i) {
+
+						str += "<li> <a onclick=\"SelByTime(this)\" id=\"time" + i + "\" >" + i + "</a> </li>";
+					});
+					$("#SelTime").append(str);
+				}
+			});
+		});
+
+		function SelByTime(element) {//ok
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+				success: function (data) {
+					var str = "";
+					var name = document.getElementById(element.id);
+					var time_str = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						if (time_str == n.start_time) {
+							str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+							str += "<td id=\"\">" + n.places + "</td>";
+							str += "<td id=\"\">" + n.places[0] + "</td>";
+							str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+							str += "<td id=\"\">" + n.start_time + "</td>";
+							str += "<td id=\"\">" + n.stop_time + "</td>";
+							str += "<td id=\"\">" + n.money + "</td>";
+							str += "</tr>";
+						}
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		};
+
+		var StartPlace = null;
+		var StopPlace = null;
+		function SetStartPlace(element) {
+			var innername = document.getElementById(element.id);
+			StartPlace = innername.innerHTML;
+			//alert(StartPlace);
+
+		}
+
+		function SetStopPlace(element) {
+			var innername = document.getElementById(element.id);
+			StopPlace = innername.innerHTML;
+			//alert(StopPlace);
+		}
+
+		$(function GetStartPlace() {//ok
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/place/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$.each(data.data, function (i, n) {
+
+						str += "<li> <a onclick=\"SetStartPlace(this)\" id=\"" + n.placename + "\">" + n.placename + "</a> </li>";
+					});
+					$("#SelStartPlace").append(str);
+				}
+			});
+		});
+
+		$(function GetStopPlace() {//ok
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/place/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$.each(data.data, function (i, n) {
+
+						str += "<li> <a onclick=\"SetStopPlace(this)\" id=\"" + n.placename + "\">" + n.placename + "</a> </li>";
+					});
+					$("#SelStopPlace").append(str);
+				}
+			});
+		});
+
+		function SelByPlace() {
+			if (StartPlace == null || StopPlace == null) {
+				alert("未选择好出发站或目的站!");
+				return;
+			}
+			GetData(StartPlace,StopPlace);
+		}
+
+
+
+
+		$(function Search() {//
+			$.ajax({
+				xhrFields: { withCredentials: true },
+				type: "POST",
+				url: "http://127.0.0.1:8000/api/route/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$.each(data.data, function (i, n) {
+						str += "<tr class=\"success\"><td>" + n.routename + "</td>";
+						str += "<td id=\"\">" + n.places + "</td>";
+						str += "<td id=\"\">" + n.places[0] + "</td>";
+						str += "<td id=\"\">" + n.places[n.places.length - 1] + "</td>";
+						str += "<td id=\"\">" + n.start_time + "</td>";
+						str += "<td id=\"\">" + n.stop_time + "</td>";
+						str += "<td id=\"\">" + n.money + "</td>";
+						str += "</tr>";
+					});
+					$("#searchResult").append(str);
+				}
+			});
+		})
+
+	</script>
+
+</head>
+
+<body>						
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="row-fluid">
+					<div class="span12">
+						<ul class="nav nav-tabs">
+							<li class="active">
+								<a>公交信息查询</a>
+							</li>
+							<li>
+								<a onclick=Logout()>退出</a>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据线路筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelRoute">
+
+							</ul>
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据时刻筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelTime">
+
+							</ul>
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">出发站</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelStartPlace">
+
+							</ul>
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">目的站</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelStopPlace">
+
+							</ul>
+						</div>
+					</div>
+
+					<div class="span4">
+						<div class="btn-group">
+							<a id="modal-429131" href="" role="button" class="btn" data-toggle="modal" onclick="SelByPlace()">查询</a>
+
+						</div>
+					</div>
+				</div>
+				<div class=span12 style="height:60px">
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="row-fluid">
+							<table class="table table-bordered table-hover table-condensed">
+								<thead>
+									<tr>
+										<th>
+											线路
+										</th>
+										<th>
+											站点
+										</th>
+										<th>
+											始发站
+										</th>
+										<th>
+											终点站
+										</th>
+										<th>
+											始发时间
+										</th>
+										<th>
+											停运时间
+										</th>
+										<th>
+											票价
+										</th>
+									</tr>
+								</thead>
+								<tbody id="searchResult">
+								</tbody>
+								
+
+							</table>
+						</div>
+						<div class="row-fluid">
+								<div class="row-fluid span12"  id="gongjiaowang" style="height: 500px; width:100%"></div > 
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="js/xianlutu.js"></script>
+</body>
+
+</html>

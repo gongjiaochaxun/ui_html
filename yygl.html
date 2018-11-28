@@ -1,0 +1,466 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<script src="js/jquery-2.0.0.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-combined.min.css">
+	<script>
+		$(function GetUsername() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/user/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var nameset = new Set();
+					$.each(data.data, function (i, n) {
+						nameset.add(n.username);
+					});
+					nameset.forEach(function (i) {
+						str += "<li> <a onclick=\"SelByUsername(this)\" id=\"name" + i + "\">" + i + "</a> </li>";
+					});
+					$("#SelUsername").append(str);
+				}
+			});
+		});
+
+		$(function GetEmail() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/user/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var emailset = new Set();
+					$.each(data.data, function (i, n) {
+						emailset.add(n.email);
+					});
+					emailset.forEach(function (i) {
+						str += "<li> <a onclick=\"SelByEmail(this)\" id=\"email" + i + "\">" + i + "</a> </li>";
+					});
+					$("#SelEmail").append(str);
+				}
+			});
+		});
+
+		$(function GetSex() {//ok
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/user/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var sexset = new Set();
+					$.each(data.data, function (i, n) {
+						sexset.add(n.sex);
+					});
+					sexset.forEach(function (i) {
+						str += "<li> <a onclick=\"SelBySex(this)\" id=\"sex" + i + "\">" + i + "</a> </li>";
+					});
+					$("#SelSex").append(str);
+				}
+			});
+		});
+
+		function SelByUsername(element) {//
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/user/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var id = element.id;
+					//var SelPlaceName = element.value();
+					//alert(SelRouteID);
+					//alert(id);
+					var name = document.getElementById(id);
+					var name = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						if (name==n.username) {
+							str += "<tr class=\"success\"><td>" + n.username + "</td>";
+							str += "<td id=\"\">" + n.sex + "</td>";
+							str += "<td id=\"email" + n.email + "\">" + n.email + "</td>";
+							str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + n.email + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"del" + n.email + "\" onclick=\"Del_user(this)\">删除</a></td>";
+							str += "</tr>";
+						}
+					});
+
+					$("#searchResult").append(str);
+				}
+			});
+		}
+
+		function SelByEmail(element) {//
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/user/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var id = element.id;
+					//var SelPlaceName = element.value();
+					//alert(SelRouteID);
+					//alert(id);
+					var name = document.getElementById(id);
+					var name = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						if (name==n.email) {
+							str += "<tr class=\"success\"><td>" + n.username + "</td>";
+							str += "<td id=\"\">" + n.sex + "</td>";
+							str += "<td id=\"email" + n.email + "\">" + n.email + "</td>";
+							str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + n.email + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"del" + n.email + "\" onclick=\"Del_user(this)\">删除</a></td>";
+							str += "</tr>";
+						}
+					});
+
+					$("#searchResult").append(str);
+				}
+			});
+		}
+		function SelBySex(element) {//
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/user/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					var id = element.id;
+					//var SelPlaceName = element.value();
+					//alert(SelRouteID);
+					//alert(id);
+					var name = document.getElementById(id);
+					var name = name.innerHTML;
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						if (name==n.sex) {
+							str += "<tr class=\"success\"><td>" + n.username + "</td>";
+							str += "<td id=\"\">" + n.sex + "</td>";
+							str += "<td id=\"email" + n.email + "\">" + n.email + "</td>";
+							str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + n.email + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"del" + n.email + "\" onclick=\"Del_user(this)\">删除</a></td>";
+							str += "</tr>";
+						}
+					});
+
+					$("#searchResult").append(str);
+				}
+			});
+		}
+
+		function Search() {//
+			$.ajax({
+
+				type: "POST", xhrFields: { withCredentials: true },
+				url: "http://127.0.0.1:8000/api/user/list",
+				dataType: "json",
+
+				success: function (data) {
+					var str = "";
+					$("#searchResult").text("");
+					$.each(data.data, function (i, n) {
+						str += "<tr class=\"success\"><td>" + n.username + "</td>";
+						str += "<td id=\"\">" + n.sex + "</td>";
+						str += "<td id=\"email" + n.email + "\">" + n.email + "</td>";
+						str += "<td><a href=\"#tanchuang\" role=\"button\" data-toggle=\"modal\" id= \"" + n.email + "\"  onclick=\"getupdate(this)\">编辑</a><a id= \"del" + n.email + "\" onclick=\"Del_user(this)\">删除</a></td>";
+						str += "</tr>";
+
+					});
+
+					$("#searchResult").append(str);
+				}
+			});
+		}
+
+		$(function () { Search(); });
+
+		function fuyong(x) {
+			if (x == 1) {
+				$("#save").attr("onclick", "Add_user()");
+			} else if (x == 0) {
+				$("#save").attr("onclick", "Update_user()");
+			}
+		}
+
+		function Add_user() {//ok，只需要上环境
+			fuyong(1);
+			//alert("调用add");
+			var username = $("#username").val();
+			var password = $("#password").val();
+			var email = $("#email").val();
+			var sex = $("#sex").val();
+			//alert(username + "  " + password + "  " + email + "  " + sex);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/user/add", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true }, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "user_add",
+					"username": username,
+					"password": password,
+					"email": email,
+					"sex": sex
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("添加成功");
+
+					}
+					else {
+						alert("添加失败");
+					}
+					Search();
+				}
+			});
+
+		}
+
+		function Del_user(element) {//ok,就差加上环境
+			var SeluserID = "email" + element.id;
+
+			//alert(SeluserID);
+			var text = document.getElementById(SeluserID);
+			var email = text.innerHTML;
+			//alert(email);
+			//如何获取placename
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/user/del", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true }, xhrFields: { withCredentials: true }, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "user_del",
+					"email": email,
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("删除成功");
+
+					}
+					else {
+						alert("删除失败");
+					}
+					Search();
+				}
+			});
+		}
+
+		var Selusername = "";
+		var SeluserID = "";
+		var Selemail = "";
+		function getupdate(element) {//get更新的行的id的name
+			Selemail = element.id;
+			// var text = document.getElementById(SeluserID);
+			// Selusername = text.innerHTML;
+			//alert("getupdate"+SelplaceID);
+			//alert(Selemail);
+			$("#email").val(Selemail);
+			fuyong(0);
+		}
+
+		function Update_user() {
+			$("#email").val("");
+			var username = $("#username").val();
+			var password = $("#password").val();
+			var email = $("#email").val();
+			var sex = $("#sex").val();
+			//alert(username + "  " + password + "  " + email + "  " + sex);
+			$.ajax({
+				url: "http://127.0.0.1:8000/api/user/edit", // 请求地址 
+				type: "POST", xhrFields: { withCredentials: true }, // 请求类型
+				async: true, // 是否异步执行.
+				data: {
+					"action": "user_edit",
+					"username": username,
+					"password": password,
+					"email": Selemail,
+					"sex": sex
+				},
+				dataType: "json", // 返回数据的数据类型.
+				success: function (data) {
+					if (data.res == true) {
+						alert("修改成功");
+
+					}
+					else {
+						alert("修改失败");
+					}
+					Search();
+				}
+			});
+
+
+		}
+
+
+	</script>
+
+</head>
+<body">
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="row-fluid">
+					<div class="span12">
+						<ul class="nav nav-tabs">
+							<li>
+								<a href="xxtj.html">信息统计</a>
+							</li>
+							<li class="active">
+								<a href="yygl.html">用户管理</a>
+							</li>
+							<li>
+								<a href="gjgl.html">公交管理</a>
+							</li>
+							<!-- <li>
+								<a href="系统设置.html">系统设置</a>
+							</li> -->
+							<li>
+								<a href="ddgl.html">地点管理</a>
+							</li>
+
+
+						</ul>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据姓名筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelUsername">
+
+							</ul>
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据邮箱筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelEmail">
+
+							</ul>
+						</div>
+					</div>
+
+					<div class="span2">
+						<div class="btn-group">
+							<button class="btn">根据性别筛选</button> <button data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></button>
+							<ul class="dropdown-menu" id="SelSex">
+
+							</ul>
+
+						</div>
+					</div>
+					<div class="span2">
+						<div class="btn-group">
+							<a id="modal-429131" href="#tanchuang" role="button" class="btn" data-toggle="modal" onclick="fuyong(1)">添加用户</a>
+
+						</div>
+					</div>
+				</div>
+				<div class=span12 style="height:60px">
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="row-fluid">
+							<table class="table table-bordered table-hover table-condensed">
+								<thead>
+									<tr>
+										<th>
+											姓名
+										</th>
+										<th>
+											性别
+										</th>
+										<th>
+											邮箱
+										</th>
+										<th>
+											操作
+										</th>
+									</tr>
+								</thead>
+								<tbody id="searchResult">
+								</tbody>
+							</table>
+							<div class="row-fluid">
+								<div class="span12">
+
+
+
+									<div id="tanchuang" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												个人信息
+											</h3>
+										</div>
+										<div class="modal-body">
+											<table class="table">
+												<tbody>
+
+													<tr>
+														<td>
+															姓名
+														</td>
+														<td>
+															<input id="username" style="width:100px" />
+														</td>
+														<td>
+															密码
+														</td>
+														<td>
+															<input id="password" style="width:100px" />
+														</td>
+
+													</tr>
+													<tr>
+														<td>
+															性别
+														</td>
+														<td>
+															<input id="sex" style="width:100px" />
+														</td>
+														<td>
+															邮箱
+														</td>
+														<td>
+															<input id="email" style="width:100px" />
+														</td>
+
+													</tr>
+
+												</tbody>
+											</table>
+											<div class="modal-footer">
+												<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <button class="btn btn-primary" id="save"
+												 onclick="">保存设置</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</body>
+
+</html>
